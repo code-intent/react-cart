@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import ItemTypes from './ItemTypes';
 import { DragSource } from 'react-dnd';
 
 const style = {
@@ -17,34 +18,39 @@ const boxSource = {
       name: props.name,
     };
   },
+
+  endDrag(props, monitor) {
+    const item = monitor.getItem();
+    const dropResult = monitor.getDropResult();
+
+    if (dropResult) {
+      window.alert(`You dropped ${item.name} into ${dropResult.name}!`);
+    }
+  },
 };
 
-export class Box extends Component {
+@DragSource(ItemTypes.BOX, boxSource, (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging()
+}))
+export default class Box extends Component {
+  static propTypes = {
+    connectDragSource: PropTypes.func.isRequired,
+    isDragging: PropTypes.bool.isRequired,
+    name: PropTypes.string.isRequired,
+  };
 
   render() {
-    const { name, isDropped, isDragging, connectDragSource } = this.props;
+    const { isDragging, connectDragSource } = this.props;
+    const { name } = this.props;
     const opacity = isDragging ? 0.4 : 1;
 
-    return connectDragSource(
-      <div style={{ ...style, opacity }}>
-        {isDropped ?
-          <s>{name}</s> :
-          name
-        }
-      </div>
+    return (
+      connectDragSource(
+        <div style={{ ...style, opacity }}>
+          {name}
+        </div>
+      )
     );
   }
 }
-
-Box.propTypes = {
-  connectDragSource: PropTypes.func.isRequired,
-  isDragging: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  isDropped: PropTypes.bool.isRequired,
-};
-
-export default DropTarget(props => props.type, boxSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging(),
-}))(Box);

@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react';
+import ItemTypes from './ItemTypes';
 import { DropTarget } from 'react-dnd';
 
 const style = {
@@ -14,17 +15,27 @@ const style = {
   float: 'left',
 };
 
-const dustbinTarget = {
-  drop(props, monitor) {
-    props.onDrop(monitor.getItem());
+const boxTarget = {
+  drop() {
+    return { name: 'Dustbin' };
   },
 };
 
-export class Dustbin extends Component {
+@DropTarget(ItemTypes.BOX, boxTarget, (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  isOver: monitor.isOver(),
+  canDrop: monitor.canDrop()
+}))
+export default class Dustbin extends Component {
+  static propTypes = {
+    connectDropTarget: PropTypes.func.isRequired,
+    isOver: PropTypes.bool.isRequired,
+    canDrop: PropTypes.bool.isRequired,
+  };
 
   render() {
-    const { accepts, isOver, canDrop, connectDropTarget, lastDroppedItem } = this.props;
-    const isActive = isOver && canDrop;
+    const { canDrop, isOver, connectDropTarget } = this.props;
+    const isActive = canDrop && isOver;
 
     let backgroundColor = '#222';
     if (isActive) {
@@ -35,31 +46,11 @@ export class Dustbin extends Component {
 
     return connectDropTarget(
       <div style={{ ...style, backgroundColor }}>
-
         {isActive ?
           'Release to drop' :
-          'This dustbin accepts: ' + accepts.join(', ')
-        }
-
-        {lastDroppedItem &&
-          <p>Last dropped: {JSON.stringify(lastDroppedItem)}</p>
+          'Drag a box here'
         }
       </div>
     );
   }
 }
-
-Dustbin.propTypes = {
-  connectDropTarget: PropTypes.func.isRequired,
-  isOver: PropTypes.bool.isRequired,
-  canDrop: PropTypes.bool.isRequired,
-  accepts: PropTypes.arrayOf(PropTypes.string).isRequired,
-  lastDroppedItem: PropTypes.object,
-  onDrop: PropTypes.func.isRequired,
-};
-
-export default DropTarget(props => props.accepts, dustbinTarget, (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget(),
-  isOver: monitor.isOver(),
-  canDrop: monitor.canDrop(),
-}))(Dustbin);
