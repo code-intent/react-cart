@@ -4,8 +4,7 @@ import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 import Dustbin from '../components/Dustbin';
 import Box from '../components/Box';
 
-@DragDropContext(HTML5Backend)
-export default class Container extends Component {
+export class Container extends Component {
   render() {
     return (
       <div>
@@ -21,3 +20,5 @@ export default class Container extends Component {
     );
   }
 }
+
+export default DragDropContext(HTML5Backend)(Container);
