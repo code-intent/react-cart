@@ -2,42 +2,27 @@ import React, { PropTypes, Component } from 'react';
 import ItemTypes from './ItemTypes';
 import { DropTarget } from 'react-dnd';
 
-const style = {
-  height: '12rem',
-  width: '12rem',
-  marginRight: '1.5rem',
-  marginBottom: '1.5rem',
-  color: 'white',
-  padding: '1rem',
-  textAlign: 'center',
-  fontSize: '1rem',
-  lineHeight: 'normal',
-  float: 'left',
-};
-
 const boxTarget = {
   drop() {
     return { name: 'Dustbin' };
   },
 };
 
-export class Dustbin extends Component {
+class Dustbin extends Component {
   render() {
     const { canDrop, isOver, connectDropTarget } = this.props;
     const isActive = canDrop && isOver;
 
-    let backgroundColor = '#222';
+    let backgroundColor = '#5be19e';
     if (isActive) {
-      backgroundColor = 'darkgreen';
-    } else if (canDrop) {
-      backgroundColor = 'darkkhaki';
+      backgroundColor = '#8EFFD1';
     }
 
     return connectDropTarget(
-      <div style={{ ...style, backgroundColor }}>
+      <div style={{ backgroundColor }}>
         {isActive ?
-          'Release to drop' :
-          'Drag a box here'
+          <i className='fa fa-cart-arrow-down'></i> :
+          <i className='fa fa-shopping-cart'></i>
         }
       </div>
     );
